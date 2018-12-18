@@ -1,7 +1,7 @@
 # MIT License
-# 
+#
 # Copyright (c) 2017 Tom Runia
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -56,7 +56,7 @@ class FeatureExtractor(object):
         self._preproc_func_name = preproc_func_name
         self._num_preproc_threads = preproc_threads
 
-        self._global_step = tf.train.get_or_create_global_step()
+        self._global_step = tf.contrib.framework.get_or_create_global_step()
 
         # Retrieve the function that returns logits and endpoints
         self._network_fn = nets_factory.get_network_fn(
@@ -120,13 +120,13 @@ class FeatureExtractor(object):
 
         if ("resnet_v2" in self._network_name) and (self._preproc_func_name is None):
             raise ValueError("When using ResNet, please perform the pre-processing "
-                            "function manually. See here for details: " 
+                            "function manually. See here for details: "
                             "https://github.com/tensorflow/models/tree/master/slim")
 
         # Read image file from disk and decode JPEG
         reader = tf.WholeFileReader()
         image_filename, image_raw = reader.read(self._filename_queue)
-        image = tf.image.decode_jpeg(image_raw, channels=3)
+        image = tf.image.decode_image(image_raw, channels=3)
         # Image preprocessing
         preproc_func_name = self._network_name if self._preproc_func_name is None else self._preproc_func_name
         image_preproc_fn = preprocessing_factory.get_preprocessing(preproc_func_name, is_training=False)
